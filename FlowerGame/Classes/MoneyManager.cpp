@@ -45,7 +45,7 @@ void MoneyManager::addUI()
     GameScene::gameNode->addChild(coinIcon);
     
     
-    //Add label with current money
+    //Add label with current money 
     totalMoneyLabel = Label::createWithSystemFont(buffer, "Helvetica", 32);
     totalMoneyLabel->setAlignment(TextHAlignment::LEFT);
     totalMoneyLabel->setColor(Color3B::RED);

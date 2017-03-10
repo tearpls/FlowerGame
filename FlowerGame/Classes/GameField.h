@@ -17,8 +17,6 @@ class GameField
 {
 public:
     
-    
-    
     static GameField* getInstance();
     
     ~GameField() {};
@@ -26,18 +24,21 @@ public:
     //Generate 1 for the occuped pixels and 0 for free pixels
     void updateView(std::vector<cocos2d::Sprite*> obstaclesSprites);
     
-    //Generate random free points on the game field for spawning new monster
+    //Generate random free pont on the game field for spawning new monster
     cocos2d::Vec2 getFreePointForSpawning();
     
     //Check if plant can be placed on the desired position
     bool isFreeForPlant(cocos2d::Point position);
     
-    
+    //Generate free point for the snake next step
     cocos2d::Vec2 getFreePointForMove(cocos2d::Vec2 position, float speed, float rotation);
     
 private:
     GameField() {};
     
+    static GameField* gameFieldInstance;
+    
+    //x and y holder
     struct FieldPoint
     {
         FieldPoint(int x, int y) : x(x), y(y) {};
@@ -50,13 +51,10 @@ private:
     
     cocos2d::Size winSize;
     
-    static GameField* gameFieldInstance;
-    
     //Current Game Field view
     std::vector<std::vector<int> > obstaclesView;
     
     void resetField();
-    
     
     const int borderSize = 50;
     

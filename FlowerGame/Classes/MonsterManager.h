@@ -25,6 +25,7 @@ public:
     
     ~MonsterManager() {};
     
+    //Maybe abstract factory would be better approach
     void spawnSnake();
     
     void update(float dt);

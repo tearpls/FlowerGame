@@ -19,6 +19,7 @@ public:
     virtual ~Gameover() { };
     
     virtual void init() override;
+    
     virtual void cleanup () override;
     
     virtual void pause() override;

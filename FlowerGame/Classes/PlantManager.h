@@ -24,10 +24,9 @@ public:
     
     std::vector<cocos2d::Sprite*> getSprites();
     
-    cocos2d::Size getPlantSize();
-    
     void spawnFlower(cocos2d::Point position);
     
+    //Check if there any plants on the game field
     bool isPlantsAvailable () {return plants.size() > 0;};
     
 private:

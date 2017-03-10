@@ -22,11 +22,13 @@ public:
     
     virtual void speedUp() = 0;
     
+    virtual void deleteMe() = 0;
+    
     void killMonster () {forDelete = true; };
     
     bool isDead () {return forDelete; };
     
-    virtual void deleteMe() = 0;
+    
 protected:
     bool forDelete;
     

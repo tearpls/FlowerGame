@@ -22,8 +22,6 @@ PlantManager* PlantManager::getInstance()
     if (!pmInstance) {
         pmInstance = new PlantManager();
         
-        
-        
     }
     
     return pmInstance;
@@ -37,6 +35,7 @@ void PlantManager::reset()
 
 void PlantManager::spawnFlower(cocos2d::Point position)
 {
+    //Check if money is available and desired position is free
     if (MoneyManager::getInstance()->isMoneyAvailable(flowerPrice) && GameField::getInstance()->isFreeForPlant(position)) {
         
         MoneyManager::getInstance()->addMoney(-flowerPrice);
@@ -55,18 +54,18 @@ void PlantManager::spawnFlower(cocos2d::Point position)
 void PlantManager::update(float dt)
 {
     
-    std::vector<Sprite*> monstersSprites = MonsterManager::getInstance()->getSprites();
-    
     for (const auto& plant : plants)
     {
         plant->update(dt);
         
-        if (plant->checkIntersect(monstersSprites)) {
+        if (plant->checkIntersect(MonsterManager::getInstance()->getSprites())) {
+            //Remove plant if it's touched by monster
             plant->eatPlant();
             MonsterManager::getInstance()->speedUpMonsters();
         }
     }
     
+    //Find if there plant with "eaten" flag and delete from vector
     auto plantItr = std::find_if(plants.begin(), plants.end(),  [](Plant* plant) {return plant->isEaten(); });
     if (plantItr != plants.end()) {
         
@@ -95,15 +94,3 @@ std::vector<cocos2d::Sprite*> PlantManager::getSprites()
 
 
 
-cocos2d::Size PlantManager::getPlantSize()
-{
-    //Create texture and get size of it
-    //Better approach would be creating settings xml/json with all plants settings
-    Image* image = new Image();
-    image->initWithImageFile("images/plants/flower/flower.png");
-    
-    Texture2D* texture = new Texture2D();
-    texture->initWithImage(image);
-    
-    return texture->getContentSize();
-}

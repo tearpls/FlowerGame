@@ -29,8 +29,6 @@ protected:
 
     bool eaten;
     
-
-    
 };
 
 #endif /* Plant_h */

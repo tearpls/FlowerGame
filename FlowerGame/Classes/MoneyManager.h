@@ -28,13 +28,14 @@ public:
 private:
     static MoneyManager* mmInstance;
     
-    
     cocos2d::Label* totalMoneyLabel;
     
+    //Initial money count
     const int initMoney = 150;
     
     int currentMoney;
     
+    //Minimum money needed for play
     const int moneyMinimum = 50;
     
 };

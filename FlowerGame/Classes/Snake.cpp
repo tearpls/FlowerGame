@@ -35,11 +35,12 @@ Snake::Snake(cocos2d::Point initPosition)
 
 void Snake::update(float dt)
 {
+    //Check if art could be grown and snake is not marked for deletion
     if (snakeParts.size() < maxParts && !forDelete) {
         growthTime -= dt;
         
         if (growthTime <= 0) {
-            
+            //Grow part and reset time
             this->growPart();
             growthTime = growthRate;
         }
@@ -48,7 +49,10 @@ void Snake::update(float dt)
     
     this->move();
     
+    
     currentSpeedUpTime -= dt;
+    //Check if speed up time is over and reset snake speed to default
+    //Probably implementing states would be better approach
     if (currentSpeed > initialSpeed && currentSpeedUpTime <= 0) {
         currentSpeed = initialSpeed;
     }
@@ -58,7 +62,7 @@ void Snake::update(float dt)
 bool Snake::handleTouch(cocos2d::Point touchLocation)
 {
     bool isTouched = false;;
-    
+    //Check if snake is touched and remove last part of it
     for (auto itr = snakeParts.begin(); itr != snakeParts.end(); ++itr) {
         Rect snakeRectBar = (*itr)->getBoundingBox();
         if (snakeRectBar.containsPoint(touchLocation)) {
@@ -84,10 +88,8 @@ void Snake::deleteMe()
 }
 
 
-
 void Snake::growPart()
 {
-    
     //Get pointer on the snake's tale
     Sprite* lastPart = snakeParts.back();
     
@@ -122,7 +124,7 @@ void Snake::growPart()
 
 float Snake::calculateRotation(cocos2d::Vec2 currentPoint, Vec2 targetPoint, float currentAngle)
 {
-    
+    //Find resulting vector and angle of it
     Vec2 deltaVector = currentPoint - targetPoint;
     
     Point firstVector = targetPoint-currentPoint;
@@ -132,6 +134,8 @@ float Snake::calculateRotation(cocos2d::Vec2 currentPoint, Vec2 targetPoint, flo
     
     if (currentAngle > 0) { currentAngle = fmodf(currentAngle, 360.0f); }
     else { currentAngle = fmodf(currentAngle, -360.0f); }
+    
+    //Find difference between current angle and desired
     float diffAngle = endAngle - currentAngle;
     
     if (diffAngle > 180) {   diffAngle -= 360; }
@@ -144,9 +148,10 @@ float Snake::calculateRotation(cocos2d::Vec2 currentPoint, Vec2 targetPoint, flo
 
 Vec2 Snake::calculatePosition(Vec2 currentPos, Vec2 targetPos, float deltaDistance)
 {
-    
+    //Get distance between current position and target position
     float distance  = targetPos.distance(currentPos);
     
+    //Calculate new point with current speed
     if(distance > deltaDistance){
     
         float offX = currentPos.x -  targetPos.x;

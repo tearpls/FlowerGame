@@ -24,6 +24,7 @@ public:
     
     virtual std::vector<cocos2d::Sprite*> getSprites() override;
     
+    //Check intersections with monsters
     virtual bool checkIntersect(std::vector<cocos2d::Sprite*> monstersSprites) override;
     
     virtual void removeMe() override;
@@ -35,13 +36,12 @@ private:
     
     void initOptions();
     
-    cocos2d::Vec2 previousPosition;
-    float previousRotation;
-    
+    //Increasing money rate
     const float moneyGainfrequency = 3.0f;
     
     float currentMoneyGainTime;
     
+    //Money count gain rate
     const int moneyGainRate = 5;
     
 };

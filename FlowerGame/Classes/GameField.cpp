@@ -60,11 +60,11 @@ void GameField::resetField()
 
 void GameField::updateView(std::vector<cocos2d::Sprite*> obstaclesSprites)
 {
-    
+    //Get monster size and add 0.05% for free gap
     float monsterSize = getMaxMonsterSize()*1.05f;
     this->resetField();
     
-    //Reserve points by monsters monster.position +- half of the monster size
+    //Reserve points by monsters (monster.position +- half of the monster size)
     for (const auto& sprite : obstaclesSprites) {
         
         Vec2 pos = sprite->getPosition();
@@ -80,7 +80,7 @@ void GameField::updateView(std::vector<cocos2d::Sprite*> obstaclesSprites)
         botRightPoint.x = pos.x + monsterSize;
         botRightPoint.y = pos.y - monsterSize;
 
-        
+        //Fill in reserved aread with 1
         for (int y = botRightPoint.y; y < topLeftPoint.y; ++y) {
             
             std::fill(obstaclesView[y].begin()+topLeftPoint.x, obstaclesView[y].begin()+botRightPoint.x, 1);
@@ -104,10 +104,11 @@ Vec2 GameField::getFreePointForSpawning()
     std::vector<Sprite*> plants = PlantManager::getInstance()->getSprites();
     obstacles.insert(obstacles.end(), plants.begin(), plants.end());
     
+    //Update view with plants and monsters to prevent monster spawning on another monster/snake
     this->updateView(obstacles);
     
 
-    //Create vector with random free points
+    //Create vector with random not reserved points
     //Note: using custom FieldPoint insted of Vec2 increased performance by 2 times
     std::vector<FieldPoint> freePoints;
     
@@ -137,16 +138,20 @@ Vec2 GameField::getFreePointForSpawning()
 
 
     if (freePoints.size() > 0) {
-        
-        FieldPoint freePoint = freePoints.at(random(0, (int)freePoints.size()));
-        
-        spawnPoint.x = freePoint.x;
-        spawnPoint.y = freePoint.y;
+        try {
+
+            FieldPoint freePoint = freePoints.at(random(0, (int)freePoints.size()-1));
+            
+            spawnPoint.x = freePoint.x;
+            spawnPoint.y = freePoint.y;
+
+        } catch (const std::out_of_range& exp) {
+            log("Out of range");
+        }
         
     }
     
   
-    
     return spawnPoint;
     
 }
@@ -155,14 +160,11 @@ Vec2 GameField::getFreePointForSpawning()
 bool GameField::isFreeForPlant(cocos2d::Point position)
 {
     
-    
-    //this->updateView(std::vector<Sprite*>());
-
+    //Update view with monsters to prevent placing plant on monster
     this->updateView(MonsterManager::getInstance()->getSprites());
     
     float spriteSize = this->getMaxMonsterSize();
     
-    //Forbid growing plants near game border
     for (int y = position.y+spriteSize; y > position.y-spriteSize; --y) {
         for (int x = position.x-spriteSize; x < position.x+spriteSize; ++x) {
             if (obstaclesView[y][x] == 1 ) {
@@ -183,35 +185,39 @@ cocos2d::Vec2 GameField::getFreePointForMove(cocos2d::Vec2 position, float speed
 {
 
     std::vector<Vec2> freePoints;
+    //Using i for "slicing" distance to the next point for smooth movement
     for (int i = 1; i < 11; ++i) {
         //Next point random generation
+        //Angle 180 is chosen, but probably this value should be from the some kind of monster settings
         for (int deltaAngle = -90; deltaAngle <= 90; deltaAngle+=10) {
             
+            
             float newAngle = rotation+deltaAngle;
+            
+            //Calculate new position with current rotation
             Vec2 newPosition = position;
             
             newPosition.x += speed*150.0f/i*cosf(newAngle*M_PI/180.0f);
             newPosition.y += speed*150.0f/i*sinf(newAngle*M_PI/180.0f);
             
-            //Check that New position should be within game borders
+            //Check that New position should be within game borders to prevent snake from moving outside game field
             if ( (newPosition.x-borderSize) > 0 && (newPosition.x+borderSize) < winSize.width &&
                 (newPosition.y-borderSize) > 0 && (newPosition.y+borderSize) < winSize.height) {
                 
                     freePoints.push_back(newPosition);
-                
                 
             }
             
             
         }
         
-        
+        //Check if some free points are generated to prevent futher slicing
         if (freePoints.size() > 0) {
             break;
-            
         }
         
     }
+    
     
     if (freePoints.size() == 0) {
         return position;

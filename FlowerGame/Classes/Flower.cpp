@@ -41,7 +41,7 @@ void Flower::update(float dt)
 {
     currentMoneyGainTime -= dt;
     if (currentMoneyGainTime <= 0 && !eaten) {
-        
+        //Add money and reset time
         MoneyManager::getInstance()->addMoney(moneyGainRate);
         currentMoneyGainTime = moneyGainfrequency;
     }
@@ -72,7 +72,6 @@ bool Flower::checkIntersect(std::vector<cocos2d::Sprite*> monstersSprites)
         if (flowerRectBar.intersectsRect(monsterRectBar)) {
 
             return true;
-
         }
 
     }
